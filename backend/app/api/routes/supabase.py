@@ -44,13 +44,19 @@ async def supabase_health() -> JSONResponse:
 
     # Safe network verification without modifying data or requiring tables
     network_verified = False
+    verification_message = "Supabase client initialized, but network connection could not be verified"
     try:
         # Check authentication service reachability with service role / secret key
         client.auth.admin.list_users(page=1, per_page=1)
         network_verified = True
     except Exception as exc:
-        # If auth admin call fails (e.g., restricted role or network error),
-        # log type safely without leaking any credentials
+        err_text = str(exc).lower()
+        if "unregistered api key" in err_text or "invalid api key" in err_text or "401" in err_text:
+            verification_message = (
+                "Supabase client initialized, but the API key was rejected by Supabase "
+                "(invalid or unregistered API key for this project). "
+                "Please verify your Secret key in backend/.env."
+            )
         logger.warning("Supabase network verification check failed: %s", type(exc).__name__)
 
     if network_verified:
@@ -69,6 +75,6 @@ async def supabase_health() -> JSONResponse:
                 "status": "client_initialized",
                 "service": "supabase",
                 "connection": "network verification failed",
-                "message": "Supabase client initialized, but network connection could not be verified",
+                "message": verification_message,
             },
         )

@@ -1,0 +1,24 @@
+# Root .gitignore for EDUCATION-TECHNOLOGY
+# Environment files (never commit secrets)
+**/.env
+**/.env.*
+!**/.env.example
+
+# Python
+**/__pycache__/
+**/*.py[cod]
+backend/.venv/
+backend/venv/
+
+# Node
+**/node_modules/
+**/dist/
+**/dist-ssr/
+frontend/dist/
+
+# Logs
+**/*.log
+
+# IDE
+**/.vscode/
+**/.idea/
